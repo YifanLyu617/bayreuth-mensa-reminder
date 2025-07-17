@@ -4,6 +4,61 @@ from datetime import date, datetime, time
 from sentence_transformers import SentenceTransformer, util
 from rapidfuzz import fuzz
 from streamlit_autorefresh import st_autorefresh
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+SETTINGS_FILE = "settings.json"
+
+# Load and save settings (including user email)
+def load_settings():
+    if os.path.exists(SETTINGS_FILE):
+        with open(SETTINGS_FILE, "r") as f:
+            return json.load(f)
+    else:
+        return {"user_email": ""}
+
+def save_settings(settings):
+    with open(SETTINGS_FILE, "w") as f:
+        json.dump(settings, f)
+
+settings = load_settings()
+
+# Email credentials for sending (use your sender email and app password here)
+SENDER_EMAIL = "ubt.mensa.reminder@gmail.com"
+SENDER_PASSWORD = "yyhlxnuijpobfjqc"
+
+# Function to send email
+def send_email(subject, body, to_email):
+    msg = MIMEMultipart()
+    msg['From'] = SENDER_EMAIL
+    msg['To'] = to_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, to_email, msg.as_string())
+        st.success(f"Email sent to {to_email} successfully.")
+    except Exception as e:
+        st.error(f"Failed to send email: {e}")
+
+# ===== User email input section =====
+st.subheader("Email Notification Settings")
+
+user_email_input = st.text_input("Enter your email address to receive daily notifications:", value=settings.get("user_email", ""))
+if st.button("Save Email"):
+    settings["user_email"] = user_email_input.strip()
+    save_settings(settings)
+    st.success(f"Email address saved: {user_email_input.strip()}")
+
+if settings.get("user_email"):
+    st.info(f"Current notification email: {settings.get('user_email')}")
+else:
+    st.info("No email set yet for notifications.")
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -110,6 +165,7 @@ if "auto_check" not in st.session_state:
 
 st.subheader("Auto Daily Check")
 col1, col2 = st.columns(2)
+
 with col1:
     if st.button("Start Daily Auto Check at 7 AM"):
         st.session_state.auto_check = True
@@ -162,5 +218,18 @@ if st.button("Check today's Mensa menus now"):
                 st.subheader(mensa_name)
                 for match in matches:
                     st.write(match)
+                    
+            if settings.get("user_email"):
+                email_body = ""
+                for mensa_name, matches in matches_found.items():
+                    email_body += f"\n{mensa_name}:\n"
+                    for match in matches:
+                        email_body += f"- {match}\n"
+                send_email(
+                    subject="Mensa Reminder: Matched Dishes Found Today",
+                    body=email_body,
+                    to_email=settings.get("user_email")
+                )
+        
         else:
             st.info("No matches found in today's menus.")
