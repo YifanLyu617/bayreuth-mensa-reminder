@@ -88,10 +88,12 @@ def scrape_menus():
                     for row in rows:
                         td = row.find("td")
                         if td:
-                            for sup in td.find_all("sup"):
+                            td_copy = td.__copy__()
+                            for sup in td_copy.find_all("sup"):
                                 sup.decompose()
-                            meal_text = td.get_text(separator=" ", strip=True)
-                            if meal_text:
+                            text_candidates = [t.strip() for t in td_copy.stripped_strings]
+                            if text_candidates:
+                                meal_text = text_candidates[0]  # 只取第一行
                                 items.append(meal_text)
             menus[mensa_name] = list(dict.fromkeys(items))
         except Exception as e:
@@ -201,3 +203,5 @@ if st.button("Check today's Mensa menus now"):
                 )
         else:
             st.info("No matches found in today's menus.")
+
+
