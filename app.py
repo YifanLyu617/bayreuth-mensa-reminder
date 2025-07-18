@@ -63,7 +63,7 @@ else:
 ssl._create_default_https_context = ssl._create_unverified_context
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
-THRESHOLD = 0.4
+THRESHOLD = 0.6
 FUZZY_THRESHOLD = 85
 
 KEYWORDS_FILE = "keywords.json"
@@ -194,21 +194,21 @@ if st.button("Check today's Mensa menus now"):
                 for keyword in keywords:
                     keyword_lower = keyword.lower()
                     if keyword_lower in item_lower:
-                        matches.append(f"{item} (direct match)")
+                        matches.append(f"{item} 🎉 Bingo! Genau das, worauf du heute Hunger hast!")
                         break
                     synonyms = CATEGORY_SYNONYMS.get(keyword_lower, [])
                     if any(syn in item_lower for syn in synonyms):
-                        matches.append(f"{item} (category match)")
+                        matches.append(f"{item} ✨ Etwas gefunden, das genau in deinen Food-Vibe passt!")
                         break
                     score = fuzz.partial_ratio(keyword_lower, item_lower)
                     if score >= FUZZY_THRESHOLD:
-                        matches.append(f"{item} (fuzzy match: {score})")
+                        matches.append(f"{item} 🔍 Fast genau dein Geschmack – wir haben was Passendes für dich!")
                         break
                     emb1 = model.encode(keyword, convert_to_tensor=True)
                     emb2 = model.encode(item, convert_to_tensor=True)
                     sim_score = util.cos_sim(emb1, emb2).item()
                     if sim_score >= THRESHOLD:
-                        matches.append(f"{item} (semantic match: {sim_score:.2f})")
+                        matches.append(f"{item} 💡 Das könnte dir gefallen – vielleicht genau dein nächstes Lieblingsgericht?")
                         break
             if matches:
                 matches_found[mensa_name] = matches
