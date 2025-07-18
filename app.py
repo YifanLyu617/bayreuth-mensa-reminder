@@ -135,7 +135,7 @@ def scrape_menus():
             menus[mensa_name] = []
     return menus
 
-st.title("Bayreuth Mensa Reminder")
+st.title("Uni Bayreuth Mensa Reminder")
 
 keywords = load_keywords()
 
@@ -194,21 +194,21 @@ if st.button("Check today's Mensa menus now"):
                 for keyword in keywords:
                     keyword_lower = keyword.lower()
                     if keyword_lower in item_lower:
-                        matches.append(f"{item} 🎉 Bingo! Genau das, worauf du heute Hunger hast!")
+                        matches.append(f"{item} 🎉 Bingo! Exactly what you are craving!")
                         break
                     synonyms = CATEGORY_SYNONYMS.get(keyword_lower, [])
                     if any(syn in item_lower for syn in synonyms):
-                        matches.append(f"{item} ✨ Etwas gefunden, das genau in deinen Food-Vibe passt!")
+                        matches.append(f"{item} ✨ Found something that totally fits your food vibe!")
                         break
                     score = fuzz.partial_ratio(keyword_lower, item_lower)
                     if score >= FUZZY_THRESHOLD:
-                        matches.append(f"{item} 🔍 Fast genau dein Geschmack – wir haben was Passendes für dich!")
+                        matches.append(f"{item} 🔍 Almost your taste – we have found something that might be just right!")
                         break
                     emb1 = model.encode(keyword, convert_to_tensor=True)
                     emb2 = model.encode(item, convert_to_tensor=True)
                     sim_score = util.cos_sim(emb1, emb2).item()
                     if sim_score >= THRESHOLD:
-                        matches.append(f"{item} 💡 Das könnte dir gefallen – vielleicht genau dein nächstes Lieblingsgericht?")
+                        matches.append(f"{item} 💡 You might like this – could be your next favorite dish")
                         break
             if matches:
                 matches_found[mensa_name] = matches
