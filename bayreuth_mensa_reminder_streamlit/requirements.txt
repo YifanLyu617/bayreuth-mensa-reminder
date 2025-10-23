@@ -1,0 +1,7 @@
+streamlit
+beautifulsoup4
+sentence-transformers
+torch
+rapidfuzz
+streamlit-autorefresh
+
