@@ -79,4 +79,5 @@ The poster was designed as part of the *Intelligent User Interfaces* lecture pro
 
 You can view the full project poster here:  
 👉 [Click to view the full poster (PDF)](./poster_iui_YifanLyu_cmyk.pdf)
+👉 [Click to view the promotional poster (PDF)](./pitch_iui_YifanLyu.pdf)
 
