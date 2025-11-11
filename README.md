@@ -46,10 +46,10 @@ The application runs as a **Streamlit web interface** and uses a **scheduler** t
 
 - **Python**  
 - **Streamlit**  
-- **FuzzyWuzzy / difflib** (or similar fuzzy matching tools)  
+- **FuzzyWuzzy** (fuzzy matching tools)  
 - **Word embeddings** (for semantic similarity)  
-- **Email automation** (smtplib or external email service)  
-- **Web scraping** (requests, BeautifulSoup)
+- **Email automation** (smtplib)  
+- **Web scraping** (BeautifulSoup)
 
 ---
 
